@@ -6,13 +6,15 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 /**
  * Converts a File object to a base64 string suitable for the API (stripping headers).
  */
-const fileToGenerativePart = async (file: File): Promise<{ inlineData: { data: string; mimeType: string } }> => {
+const fileToGenerativePart = async (
+  file: File
+): Promise<{ inlineData: { data: string; mimeType: string } }> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result as string;
       // Split the base64 string to get the data part
-      const base64Data = base64String.split(',')[1];
+      const base64Data = base64String.split(",")[1];
       resolve({
         inlineData: {
           data: base64Data,
@@ -30,8 +32,7 @@ const fileToGenerativePart = async (file: File): Promise<{ inlineData: { data: s
  */
 export const generateConsoleAvatar = async (
   imageFile: File,
-  consoleName: string,
-  consoleEra: string
+  consoleName: string
 ): Promise<string> => {
   try {
     const imagePart = await fileToGenerativePart(imageFile);
@@ -47,17 +48,14 @@ export const generateConsoleAvatar = async (
 
     // Using 'gemini-2.5-flash-image' as requested
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
+      model: "gemini-2.5-flash-image",
       contents: {
-        parts: [
-          imagePart,
-          { text: prompt }
-        ]
-      }
+        parts: [imagePart, { text: prompt }],
+      },
     });
 
     const parts = response.candidates?.[0]?.content?.parts;
-    
+
     if (!parts) {
       throw new Error("No content generated");
     }
@@ -69,7 +67,6 @@ export const generateConsoleAvatar = async (
     }
 
     throw new Error("No image data found in response");
-
   } catch (error) {
     console.error("Error generating avatar:", error);
     throw error;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { ConsoleOption, ProcessingState } from "../types";
 import { CONSOLES } from "../constants";
 import ConsoleButton from "./components/ConsoleButton";
@@ -15,20 +15,29 @@ const App: React.FC = () => {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
-  const scrollToRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (selectedConsole && processingState === "idle") {
-      scrollToRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [selectedConsole, processingState]);
-
-  const handleConsoleSelect = (consoleData: ConsoleOption) => {
+  const handleConsoleSelect = useCallback((consoleData: ConsoleOption) => {
     setSelectedConsole(consoleData);
     setProcessingState("idle");
     setResultImage(null);
     setErrorMsg(null);
-  };
+  }, []);
+
+  const scrollToViewRef = useCallback(
+    (node: HTMLDivElement | HTMLElement | null) => {
+      if (node !== null) {
+        // requestAnimationFrame is cleaner than setTimeout for UI tasks
+        // as it aligns with the browser's paint cycle
+        requestAnimationFrame(() => {
+          node.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        });
+      }
+    },
+    []
+  );
 
   const handleImageUpload = async (file: File) => {
     if (!selectedConsole) return;
@@ -39,8 +48,7 @@ const App: React.FC = () => {
     try {
       const generatedImageUrl = await generateConsoleAvatar(
         file,
-        selectedConsole.name,
-        selectedConsole.era
+        selectedConsole.name
       );
       setResultImage(generatedImageUrl);
       setProcessingState("completed");
@@ -133,15 +141,19 @@ const App: React.FC = () => {
           </section>
         )}
 
-        <div ref={scrollToRef}></div>
-        {selectedConsole && processingState === "idle" && (
-          <section className="bg-slate-900 rounded-3xl p-8 border border-purple-500/30 shadow-[0_0_50px_rgba(168,85,247,0.15)] animate-fade-in-up">
-            <ImageUploader
-              onImageSelected={handleImageUpload}
-              selectedConsoleName={selectedConsole.name}
-            />
-          </section>
-        )}
+        <div>
+          {selectedConsole && processingState === "idle" && (
+            <section
+              ref={(el) => scrollToViewRef(el)}
+              className="bg-slate-900 rounded-3xl p-8 border border-purple-500/30 shadow-[0_0_50px_rgba(168,85,247,0.15)] animate-fade-in-up"
+            >
+              <ImageUploader
+                onImageSelected={handleImageUpload}
+                selectedConsoleName={selectedConsole.name}
+              />
+            </section>
+          )}
+        </div>
 
         {processingState === "processing" && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -181,9 +193,14 @@ const App: React.FC = () => {
         )}
 
         {processingState === "completed" && resultImage && selectedConsole && (
-          <section className="max-w-4xl mx-auto bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 animate-fade-in">
-            <div className="p-1 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500">
-              <div className="bg-slate-950 p-6 md:p-12 text-center">
+          <section
+            className="max-w-4xl mx-auto bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 animate-fade-in"
+            ref={(el) =>
+              el?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+          >
+            <div className="p-[0.15rem] bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500">
+              <div className="bg-slate-950 p-4 m-1 md:p-12 text-center rounded-2xl">
                 <div className="mb-8">
                   <h2 className="font-retro text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-red-500 to-green-500 mb-2">
                     LEVEL COMPLETED!
