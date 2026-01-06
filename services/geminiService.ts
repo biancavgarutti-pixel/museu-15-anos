@@ -37,20 +37,15 @@ export const generateConsoleAvatar = async (
     const imagePart = await fileToGenerativePart(imageFile);
 
     const prompt = `
-      Transforme esta pessoa em um personagem de videogame com o estilo gráfico do console ${consoleName} (${consoleEra}).
-      Mantenha as características faciais da pessoa reconhecíveis (cabelo, formato do rosto, óculos se houver), mas aplique estritamente a estética gráfica daquela época.
+      Reimagine a cena da foto enviada, mantendo as características faciais originais do sujeito (cabelo, rosto, acessórios), como uma festa de aniversário vibrante onde o tema central é o console de videogame ${consoleName}.
       
-      Detalhes técnicos para o estilo:
-      - Se for 8-bit/Atari/NES: Pixel art, paleta de cores limitada.
-      - Se for 16-bit/SNES/Mega Drive: Pixel art detalhada, cores vibrantes.
-      - Se for Game Boy: Monocromático esverdeado, pixel art.
-      - Se for PS1/N64: Low poly, texturas pixeladas, sem filtragem de textura.
-      - Se for PS2/Moderno: Gráficos 3D mais limpos, estilo renderizado.
-      
-      A saída deve ser SOMENTE a imagem transformada. Alta qualidade artística dentro das limitações do estilo retrô.
+      A estética da imagem deve ser realista
+  
+      Inclua decorações de festa (bolo, balões, banners) que remetam diretamente à identidade visual do ${consoleName}.
+      A saída deve ser SOMENTE a imagem transformada.
     `;
 
-    // Using 'gemini-2.5-flash-image' as requested (mapped from "Nano Banana")
+    // Using 'gemini-2.5-flash-image' as requested
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: {
@@ -61,7 +56,6 @@ export const generateConsoleAvatar = async (
       }
     });
 
-    // Iterate through parts to find the image
     const parts = response.candidates?.[0]?.content?.parts;
     
     if (!parts) {

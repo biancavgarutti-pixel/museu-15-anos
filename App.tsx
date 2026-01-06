@@ -10,10 +10,9 @@ const App: React.FC = () => {
   const [processingState, setProcessingState] = useState<ProcessingState>('idle');
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [imageError, setImageError] = useState(false); // State to track image loading error
+  const [imageError, setImageError] = useState(false);
   const scrollToRef = useRef<HTMLDivElement>(null);
 
-  // Auto scroll when state changes
   useEffect(() => {
     if (selectedConsole && processingState === 'idle') {
       scrollToRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,10 +56,8 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white relative overflow-x-hidden pb-20">
-      {/* CRT Scanline Effect */}
       <div className="animate-scanline fixed inset-0 pointer-events-none z-50"></div>
 
-      {/* Hero Section */}
       <header className="relative w-full min-h-[60vh] flex flex-col items-center justify-center overflow-hidden border-b-4 border-purple-900 bg-black py-16">
         <div className="absolute inset-0 z-0">
           <img 
@@ -72,8 +69,6 @@ const App: React.FC = () => {
         </div>
         
         <div className="relative z-10 text-center px-4 w-full max-w-5xl mx-auto flex flex-col items-center">
-          
-          {/* Logo Principal - Com Fallback Automático */}
           <div className="w-full flex flex-col items-center justify-center mb-8 min-h-[100px]">
             {!imageError ? (
               <img 
@@ -83,7 +78,6 @@ const App: React.FC = () => {
                 onError={() => setImageError(true)}
               />
             ) : (
-              // Fallback se a imagem não carregar
               <div className="animate-fade-in">
                 <div className="inline-block px-4 py-1 mb-4 border border-purple-500 rounded-full bg-purple-900/30 backdrop-blur-sm animate-pulse">
                   <span className="text-purple-300 font-bold tracking-wider text-xs md:text-sm">COMEMORAÇÃO 15 ANOS</span>
@@ -103,15 +97,16 @@ const App: React.FC = () => {
 
       <main className="container mx-auto px-4 -mt-10 relative z-20">
         
-        {/* Step 1: Console Selection */}
         {processingState !== 'completed' && (
           <section className="bg-slate-900/80 backdrop-blur-md rounded-3xl p-6 md:p-10 border border-slate-800 shadow-2xl mb-10">
             <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold mb-3">Se você fosse um console...</h2>
-              <p className="text-slate-400">...qual você seria? Escolha sua era abaixo:</p>
+              <h2 className="text-2xl md:text-3xl font-bold mb-3">
+                O museu tá de aniversário, qual console você escolheria pro tema da festa?
+              </h2>
+              <p className="text-slate-400">Escolha o seu console favorito abaixo:</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
               {CONSOLES.map((consoleItem) => (
                 <ConsoleButton
                   key={consoleItem.id}
@@ -124,7 +119,6 @@ const App: React.FC = () => {
           </section>
         )}
 
-        {/* Step 2: Upload Area */}
         <div ref={scrollToRef}></div>
         {selectedConsole && processingState === 'idle' && (
           <section className="bg-slate-900 rounded-3xl p-8 border border-purple-500/30 shadow-[0_0_50px_rgba(168,85,247,0.15)] animate-fade-in-up">
@@ -135,11 +129,9 @@ const App: React.FC = () => {
           </section>
         )}
 
-        {/* Loading State */}
         {processingState === 'processing' && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
              <div className="w-40 h-40 mb-8 relative animate-pulse flex items-center justify-center">
-                {/* Glowing effect behind the logo */}
                 <div className="absolute inset-0 bg-purple-600/30 blur-2xl rounded-full"></div>
                 {!imageError ? (
                   <img 
@@ -152,12 +144,11 @@ const App: React.FC = () => {
                   <span className="text-6xl relative z-10">👾</span>
                 )}
              </div>
-             <h3 className="text-2xl font-bold text-white mb-2">Processando com Nano Banana...</h3>
-             <p className="text-slate-400">Renderizando seus pixels na era {selectedConsole?.era}</p>
+             <h3 className="text-2xl font-bold text-white mb-2">Preparando a festa com Nano Banana...</h3>
+             <p className="text-slate-400">Reimaginando sua foto no tema {selectedConsole?.name}</p>
           </div>
         )}
 
-        {/* Error State */}
         {processingState === 'error' && (
           <div className="bg-red-900/20 border border-red-500/50 rounded-2xl p-8 text-center max-w-2xl mx-auto">
              <p className="text-red-400 text-xl mb-4 font-bold">GAME OVER</p>
@@ -171,7 +162,6 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* Step 3: Result Display */}
         {processingState === 'completed' && resultImage && selectedConsole && (
           <section className="max-w-4xl mx-auto bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 animate-fade-in">
             <div className="p-1 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500">
@@ -182,7 +172,7 @@ const App: React.FC = () => {
                      LEVEL COMPLETED!
                    </h2>
                    <p className="text-slate-400">
-                     Sua versão {selectedConsole.name} está pronta.
+                     Sua festa tema {selectedConsole.name} está pronta.
                    </p>
                  </div>
 
@@ -194,7 +184,6 @@ const App: React.FC = () => {
                         alt="Generated Avatar" 
                         className="rounded-lg shadow-2xl max-h-[60vh] w-auto mx-auto border-4 border-slate-900"
                       />
-                      {/* Watermark Logo */}
                       <div className="absolute bottom-4 right-4 w-24 md:w-32 opacity-90 drop-shadow-lg filter brightness-110">
                         {!imageError ? (
                            <img 
