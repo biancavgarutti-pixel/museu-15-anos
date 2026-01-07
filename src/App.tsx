@@ -195,9 +195,7 @@ const App: React.FC = () => {
         {processingState === "completed" && resultImage && selectedConsole && (
           <section
             className="max-w-4xl mx-auto bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 animate-fade-in"
-            ref={(el) =>
-              el?.scrollIntoView({ behavior: "smooth", block: "start" })
-            }
+            ref={(el) => el?.scrollIntoView({ behavior: "smooth" })}
           >
             <div className="p-[0.15rem] bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500">
               <div className="bg-slate-950 p-4 m-1 md:p-12 text-center rounded-2xl">
